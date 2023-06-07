@@ -1,15 +1,90 @@
-/* import { products, users } from "./database";
+import express, { Request, Response } from "express";
+import cors from "cors";
 
-console.log(users);
-console.log(products); */
+import { products, users } from "./database";
+import { TProducts, TUser } from "./types";
 
-/* import { createUser, getAllUsers } from "./database";
+const app = express();
 
-createUser("u003", "RuanHeleno", "ruanheleno@gmail.com", "123");
-getAllUsers(); */
+app.use(express.json());
+app.use(cors());
 
-import { createProduct, getAllProducts, searchProductsByName } from "./database";
+app.listen(3003, () => {
+  console.log("Servidor rodando na porta 3003");
+});
 
-createProduct("prod003", "Teclado Gamer", 230, "Melhor teclado do mundo!", "https://picsum.photos/seed/Teclado%20gamer/400");
-getAllProducts();
-console.table(searchProductsByName("gamer"));
+//Get All Users
+app.get("/users", (req: Request, res: Response) => {
+  res.status(200).send(users);
+});
+
+//Create new User
+app.post("/users", (req: Request, res: Response) => {
+  const {
+    id,
+    name,
+    email,
+    password,
+  }: { id: string; name: string; email: string; password: string } = req.body;
+  const newUser: TUser = {
+    id,
+    name,
+    email,
+    password,
+    createdAt: new Date().toISOString(),
+  };
+
+  users.push(newUser);
+
+  res.status(201).send("Cadastro realizado com sucesso!");
+  console.log(users);
+});
+
+
+
+//Get All Products
+app.get("/products", (req: Request, res: Response) => {
+  res.status(200).send(products);
+});
+
+//Get Product By Name
+app.get("/products/search", (req: Request, res: Response) => {
+  const { name } = req.query;
+
+  if (name) {
+    const result: Array<TProducts> = products.filter((product) =>
+      product.name.toLowerCase().includes(name.toString().toLowerCase())
+    );
+
+    res.status(200).send(result);
+  }
+});
+
+//Create new Product
+app.post("/products", (req: Request, res: Response) => {
+  const {
+    id,
+    name,
+    price,
+    description,
+    imageUrl,
+  }: {
+    id: string;
+    name: string;
+    price: number;
+    description: string;
+    imageUrl: string;
+  } = req.body;
+  const newProduct: TProducts = {
+    id,
+    name,
+    price,
+    description,
+    imageUrl,
+  };
+
+  products.push(newProduct);
+
+  res.status(201).send("Produto cadastrado com sucesso!");
+  console.log(products);
+});
