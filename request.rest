@@ -1,0 +1,37 @@
+###Testing
+GET http://localhost:3003/ping
+
+###Get All Users
+GET http://localhost:3003/users
+
+###Create new User
+POST http://localhost:3003/users
+Content-Type: application/json
+
+{
+  "id": "a003",
+  "name": "Ruan",
+  "email": "ruan@gmail.com",
+  "password": "123"
+}
+
+###Delete User
+DELETE http://localhost:3003/users/a002
+
+###Get All Products
+GET http://localhost:3003/products
+
+###Get Products by Gamer
+GET http://localhost:3003/products/search?name=gamer
+
+###Create new Product
+POST http://localhost:3003/products
+Content-Type: application/json
+
+{
+  "id": "prod003",
+  "name": "Teclado gamer",
+  "price": 350,
+  "description": "Melhor teclado do mercado!",
+  "imageUrl": "https://picsum.photos/seed/Teclado%20gamer/400"
+}
