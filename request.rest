@@ -1,6 +1,3 @@
-###Testing
-GET http://localhost:3003/ping
-
 ###Get All Users
 GET http://localhost:3003/users
 
@@ -9,14 +6,14 @@ POST http://localhost:3003/users
 Content-Type: application/json
 
 {
-  "id": "a003",
+  "id": "u003",
   "name": "Ruan",
   "email": "ruan@gmail.com",
   "password": "123"
 }
 
 ###Delete User
-DELETE http://localhost:3003/users/a002
+DELETE http://localhost:3003/users/u002
 
 ###Get All Products
 GET http://localhost:3003/products
@@ -35,3 +32,14 @@ Content-Type: application/json
   "description": "Melhor teclado do mercado!",
   "imageUrl": "https://picsum.photos/seed/Teclado%20gamer/400"
 }
+
+###Edit Product By ID
+PUT http://localhost:3003/products/prod001
+Content-Type: application/json
+
+{
+  "price": 400
+}
+
+###Delete Product
+DELETE http://localhost:3003/products/prod001
