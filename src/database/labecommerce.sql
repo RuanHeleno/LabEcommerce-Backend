@@ -10,8 +10,7 @@ CREATE TABLE
     );
 
 INSERT INTO users
-VALUES
-(
+VALUES (
         'u001',
         'Fulano',
         'fulano@gmail.com',
@@ -33,6 +32,8 @@ VALUES
 
 SELECT * FROM users;
 
+DELETE FROM users WHERE id = "u003";
+
 DROP TABLE users;
 
 CREATE TABLE
@@ -45,8 +46,7 @@ CREATE TABLE
     );
 
 INSERT INTO products
-VALUES
-(
+VALUES (
         'prod001',
         'Mouse gamer',
         250,
@@ -79,5 +79,16 @@ VALUES
     );
 
 SELECT * FROM products;
+
+SELECT * FROM products WHERE name LIKE "%gamer%";
+
+DELETE FROM products WHERE id = "prod005";
+
+UPDATE products SET
+    name = "SSD Externo Samsung",
+    price = 300,
+    description = "Melhor SSD da Samsung do mercado",
+    image_url = 'https://picsum.photos/seed/SSD%20Samsung/400'
+WHERE id = "prod005";
 
 DROP TABLE products;
