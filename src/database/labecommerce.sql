@@ -1,7 +1,7 @@
 -- Active: 1687214921422@@127.0.0.1@3306
 
 CREATE TABLE
-    users (
+    if NOT EXISTS users (
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
@@ -37,7 +37,7 @@ DELETE FROM users WHERE id = "u003";
 DROP TABLE users;
 
 CREATE TABLE
-    products (
+    if NOT EXISTS products (
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
         name TEXT NOT NULL,
         price REAL NOT NULL,
@@ -84,7 +84,8 @@ SELECT * FROM products WHERE name LIKE "%gamer%";
 
 DELETE FROM products WHERE id = "prod005";
 
-UPDATE products SET
+UPDATE products
+SET
     name = "SSD Externo Samsung",
     price = 300,
     description = "Melhor SSD da Samsung do mercado",
@@ -92,3 +93,40 @@ UPDATE products SET
 WHERE id = "prod005";
 
 DROP TABLE products;
+
+CREATE TABLE
+    if NOT EXISTS purchases (
+        id TEXT PRIMARY KEY UNIQUE NOT NULL,
+        buyer TEXT NOT NULL,
+        total_price REAL NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY(buyer) REFERENCES users(id)
+    );
+
+INSERT INTO purchases
+VALUES (
+        'p001',
+        'u003',
+        250,
+        '27/06/2023'
+    ), (
+        'p002',
+        'u002',
+        150,
+        '27/06/2023'
+    ), (
+        'p003',
+        'u001',
+        50,
+        '27/06/2023'
+    );
+
+SELECT * FROM purchases;
+
+UPDATE purchases SET total_price = 300 WHERE id = "p001";
+
+SELECT users.id AS purchase_id, buyer AS buyer_id, name AS buyer_name, email, total_price, purchases.created_at
+FROM users
+    INNER JOIN purchases ON users.id = purchases.buyer;
+
+DROP TABLE purchases;
