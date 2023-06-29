@@ -100,7 +100,7 @@ CREATE TABLE
         buyer TEXT NOT NULL,
         total_price REAL NOT NULL,
         created_at TEXT NOT NULL,
-        FOREIGN KEY(buyer) REFERENCES users(id)
+        FOREIGN KEY(buyer) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE 
     );
 
 INSERT INTO purchases
@@ -125,8 +125,35 @@ SELECT * FROM purchases;
 
 UPDATE purchases SET total_price = 300 WHERE id = "p001";
 
-SELECT users.id AS purchase_id, buyer AS buyer_id, name AS buyer_name, email, total_price, purchases.created_at
+SELECT
+    users.id AS purchase_id,
+    buyer AS buyer_id,
+    name AS buyer_name,
+    email,
+    total_price,
+    purchases.created_at
 FROM users
     INNER JOIN purchases ON users.id = purchases.buyer;
 
 DROP TABLE purchases;
+
+CREATE TABLE
+    if NOT EXISTS purchases_products (
+        purchase_id TEXT NOT NULL,
+        product_id TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE
+    );
+
+INSERT INTO purchases_products
+VALUES ('p001', 'prod005', 10), ('p002', 'prod003', 2), ('p003', 'prod002', 5);
+
+SELECT * FROM purchases_products;
+
+SELECT *
+FROM purchases_products
+    INNER JOIN purchases ON purchases_products.purchase_id = purchases.id
+    INNER JOIN products ON purchases_products.product_id = products.id;
+
+DROP TABLE purchases_products;
