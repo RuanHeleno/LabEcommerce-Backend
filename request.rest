@@ -6,7 +6,7 @@ POST http://localhost:3003/users
 Content-Type: application/json
 
 {
-  "id": "u003",
+  "id": "u001",
   "name": "Ruan",
   "email": "ruan@gmail.com",
   "password": "123"
@@ -18,15 +18,18 @@ DELETE http://localhost:3003/users/u002
 ###Get All Products
 GET http://localhost:3003/products
 
-###Get Products by Gamer
+###Get Products by NAME
 GET http://localhost:3003/products/search?name=gamer
+
+###Get Products by ID
+GET http://localhost:3003/products/prod001
 
 ###Create new Product
 POST http://localhost:3003/products
 Content-Type: application/json
 
 {
-  "id": "prod003",
+  "id": "prod001",
   "name": "Teclado gamer",
   "price": 350,
   "description": "Melhor teclado do mercado!",
@@ -43,3 +46,20 @@ Content-Type: application/json
 
 ###Delete Product
 DELETE http://localhost:3003/products/prod001
+
+###Get All Purchases
+GET http://localhost:3003/purchases
+
+###Create new Purchase
+POST http://localhost:3003/purchases
+Content-Type: application/json
+
+{
+  "id": "pur002",
+  "buyer": "u001",
+  "total_price": 550,
+  "paid": "Pago"
+}
+
+###Get a User Purchase
+GET http://localhost:3003/users/u001/purchases
