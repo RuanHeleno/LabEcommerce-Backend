@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 
+import { db } from "./database/knex";
 import { products, users } from "./database";
 import { TProducts, TUser } from "./types";
 
@@ -14,7 +15,7 @@ app.listen(3003, () => {
 });
 
 //Create new User
-app.post("/users", (req: Request, res: Response) => {
+app.post("/users", async (req: Request, res: Response) => {
   try {
     const {
       id,
@@ -22,40 +23,111 @@ app.post("/users", (req: Request, res: Response) => {
       email,
       password,
     }: { id: string; name: string; email: string; password: string } = req.body;
-    const newUser: TUser = {
-      id,
-      name,
-      email,
-      password,
-      createdAt: new Date().toISOString(),
-    };
+    const createdAt: string = new Date().toISOString();
 
-    if (id.charAt(0) !== "u")
+    if (id.charAt(0) !== "u") {
+      res.status(400);
       throw new Error("ID precisa começar com a letra u!");
+    }
 
-    const checkId = users.find((account) => account.id === id);
-    const checkEmail = users.find((account) => account.email === email);
+    const [userID] = await db.raw(`
+      SELECT * FROM users
+      WHERE id = "${id}";
+	`);
 
-    if (checkId) throw new Error("ID já cadastrado!");
-    if (checkEmail) throw new Error("Email já cadastrado!");
+    if (userID) {
+      res.status(400);
+      throw new Error("ID já existente!");
+    }
 
-    users.push(newUser);
+    const [userEmail] = await db.raw(`
+      SELECT * FROM users
+      WHERE email = "${email}";
+	`);
 
-    res.status(201).send("Cadastro realizado com sucesso!");
-    console.table(users);
+    if (userEmail) {
+      res.status(400);
+      throw new Error("Email já existente!");
+    }
+
+    if (!id || !name || !email || !password) {
+      res.status(400);
+      throw new Error("Dados inválidos");
+    }
+
+    await db.raw(`
+        INSERT INTO users (id, name, email, password, created_at)
+        VALUES ("${id}", "${name}", "${email}", "${password}", "${createdAt}");
+        `);
+
+    res.status(201);
+    res.send({ message: "Cadastro realizado com sucesso!" });
   } catch (error) {
-    if (error instanceof Error) res.send(error.message);
-    else res.send("Erro na instância da classe!");
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado");
+    }
   }
 });
 
 //Get All Users
-app.get("/users", (req: Request, res: Response) => {
+app.get("/users", async (req: Request, res: Response) => {
   try {
-    res.status(200).send(users);
+    const result = await db.raw(`SELECT * FROM users;`);
+
+    res.status(200).send(result);
   } catch (error) {
-    if (error instanceof Error) res.send(error.message);
-    else res.send("Erro na instância da classe!");
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado!");
+    }
+  }
+});
+
+//Get User Purchases by User id
+app.get("/users/:id/purchases", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    if (id) {
+      const newID = id as string | undefined;
+
+      if (newID !== undefined) {
+        if (newID.length !== 4) throw new Error("ID deve possuir 4 caracteres");
+
+        const result = await db.raw(
+          `SELECT * FROM purchases WHERE buyer LIKE "${id}";`
+        );
+
+        res.status(200).send(result);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado!");
+    }
   }
 });
 
@@ -78,18 +150,8 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   }
 });
 
-//Get All Products
-app.get("/products", (req: Request, res: Response) => {
-  try {
-    res.status(200).send(products);
-  } catch (error) {
-    if (error instanceof Error) res.send(error.message);
-    else res.send("Erro na instância da classe!");
-  }
-});
-
 //Get Product By Name
-app.get("/products/search", (req: Request, res: Response) => {
+app.get("/products/search", async (req: Request, res: Response) => {
   try {
     const { name } = req.query;
 
@@ -97,24 +159,87 @@ app.get("/products/search", (req: Request, res: Response) => {
       const newName = name as string | undefined;
 
       if (newName !== undefined) {
-        if (newName.length < 1)
-          throw new Error("Nome deve possuir pelo menos um caractere");
+        if (newName.length < 2)
+          throw new Error("Nome deve possuir pelo menos 2 caracteres");
 
-        const result: Array<TProducts> = products.filter((product) =>
-          product.name.toLowerCase().includes(newName.toLowerCase())
+        const result = await db.raw(
+          `SELECT * FROM products WHERE name LIKE "%${name}%";`
         );
 
         res.status(200).send(result);
       }
     }
   } catch (error) {
-    if (error instanceof Error) res.send(error.message);
-    else res.send("Erro na instância da classe!");
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado!");
+    }
+  }
+});
+
+//Get Product By ID
+app.get("/products/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    if (id) {
+      const newID = id as string | undefined;
+
+      if (newID !== undefined) {
+        if (newID.length !== 7) throw new Error("ID deve possuir 7 caracteres");
+
+        const result = await db.raw(
+          `SELECT * FROM products WHERE id LIKE "${id}";`
+        );
+
+        res.status(200).send(result);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado!");
+    }
+  }
+});
+
+//Get All Products
+app.get("/products", async (req: Request, res: Response) => {
+  try {
+    const result = await db.raw(`SELECT * FROM products;`);
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado!");
+    }
   }
 });
 
 //Create new Product
-app.post("/products", (req: Request, res: Response) => {
+app.post("/products", async (req: Request, res: Response) => {
   try {
     const {
       id,
@@ -129,28 +254,46 @@ app.post("/products", (req: Request, res: Response) => {
       description: string;
       imageUrl: string;
     } = req.body;
-    const newProduct: TProducts = {
-      id,
-      name,
-      price,
-      description,
-      imageUrl,
-    };
 
-    if (id.charAt(0) !== "u")
-      throw new Error("ID precisa começar com a letra u!");
+    if (id.charAt(0) !== "p") {
+      res.status(400);
+      throw new Error("ID precisa começar com a letra p!");
+    }
 
-    const checkId = users.find((account) => account.id === id);
+    const [productID] = await db.raw(`
+      SELECT * FROM products
+      WHERE id = "${id}";
+	`);
 
-    if (checkId) throw new Error("ID já cadastrado!");
+    if (productID) {
+      res.status(400);
+      throw new Error("ID já existente!");
+    }
 
-    products.push(newProduct);
+    if (!id || !name || !price || !description || !imageUrl) {
+      res.status(400);
+      throw new Error("Dados inválidos");
+    }
 
-    res.status(201).send("Produto cadastrado com sucesso!");
-    console.table(products);
+    await db.raw(`
+        INSERT INTO products (id, name, price, description, image_url)
+        VALUES ("${id}", "${name}", "${price}", "${description}", "${imageUrl}");
+        `);
+
+    res.status(201);
+    res.send({ message: "Produto cadastrado com sucesso!" });
   } catch (error) {
-    if (error instanceof Error) res.send(error.message);
-    else res.send("Erro na instância da classe!");
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado");
+    }
   }
 });
 
@@ -203,5 +346,63 @@ app.put("/products/:id", (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof Error) res.send(error.message);
     else res.send("Erro na instância da classe!");
+  }
+});
+
+//Create new Purchase
+app.post("/purchases", async (req: Request, res: Response) => {
+  try {
+    const {
+      id,
+      buyer,
+      total_price,
+      paid,
+    }: {
+      id: string;
+      buyer: string;
+      total_price: number;
+      paid: string;
+    } = req.body;
+    const createdAt: string = new Date().toISOString();
+
+    if (id.charAt(0) !== "p") {
+      res.status(400);
+      throw new Error("ID precisa começar com a letra p!");
+    }
+
+    const [purchaseID] = await db.raw(`
+      SELECT * FROM purchases
+      WHERE id = "${id}";
+	`);
+
+    if (purchaseID) {
+      res.status(400);
+      throw new Error("ID já existente!");
+    }
+
+    if (!id || !buyer || !total_price || !paid) {
+      res.status(400);
+      throw new Error("Dados inválidos");
+    }
+
+    await db.raw(`
+        INSERT INTO purchases (id, buyer, total_price, created_at, paid)
+        VALUES ("${id}", "${buyer}", "${total_price}", "${createdAt}", "${paid}");
+        `);
+
+    res.status(201);
+    res.send({ message: "Compra cadastrada com sucesso!" });
+  } catch (error) {
+    console.log(error);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
+    if (error instanceof Error) {
+      res.send(error.message);
+    } else {
+      res.send("Erro inesperado");
+    }
   }
 });
