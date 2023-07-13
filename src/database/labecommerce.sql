@@ -9,7 +9,7 @@ CREATE TABLE
         created_at TEXT NOT NULL
     );
 
-INSERT INTO users
+/* INSERT INTO users
 VALUES (
         'u001',
         'Fulano',
@@ -28,7 +28,7 @@ VALUES (
         'ruan@gmail.com',
         'ruan123',
         '19/06/2023'
-    );
+    ); */
 
 SELECT * FROM users;
 
@@ -45,7 +45,7 @@ CREATE TABLE
         image_url TEXT NOT NULL
     );
 
-INSERT INTO products
+/* INSERT INTO products
 VALUES (
         'prod001',
         'Mouse gamer',
@@ -76,7 +76,7 @@ VALUES (
         330,
         'Melhor SSD da Kingston do mercado',
         'https://picsum.photos/seed/SSD%20Kingston/400'
-    );
+    ); */
 
 SELECT * FROM products;
 
@@ -100,12 +100,11 @@ CREATE TABLE
         buyer TEXT NOT NULL,
         total_price REAL NOT NULL,
         created_at TEXT NOT NULL,
-        paid TEXT NOT NULL,
         
         FOREIGN KEY(buyer) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE 
     );
 
-INSERT INTO purchases
+/* INSERT INTO purchases
 VALUES (
         'p001',
         'u003',
@@ -121,7 +120,7 @@ VALUES (
         'u001',
         50,
         '27/06/2023'
-    );
+    ); */
 
 SELECT * FROM purchases;
 
@@ -148,9 +147,9 @@ CREATE TABLE
         FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE
     );
 
-INSERT INTO purchases_products
+/* INSERT INTO purchases_products
 VALUES ('p001', 'prod005', 10), ('p002', 'prod003', 2), ('p003', 'prod002', 5);
-
+ */
 SELECT * FROM purchases_products;
 
 SELECT *
