@@ -19,7 +19,14 @@ export const GetUserPurchaseById = async (req: Request, res: Response) => {
         throw new Error("ID deve possuir 4 caracteres!");
       }
 
-      const result = await db("purchases").where({ buyer: id });
+      const result = await db("purchases")
+        .select(
+          "id",
+          "buyer",
+          "total_price AS totalPrice",
+          "created_at AS createdAt"
+        )
+        .where({ buyer: id });
 
       res.status(200).send(result);
     }

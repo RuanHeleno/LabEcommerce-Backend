@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###Get User by ID
-GET http://localhost:3003/users/u002
+GET http://localhost:3003/users/u001
 
 ###Get User Purchases By ID
 GET http://localhost:3003/users/u001/purchases

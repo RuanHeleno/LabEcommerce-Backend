@@ -9,11 +9,19 @@ export const GetAllProducts = async (req: Request, res: Response) => {
     const name = req.query.name as string | undefined;
 
     if (name) {
-      const result = await db("products").where("name", "like", `%${name}%`);
+      const result = await db("products")
+        .select("id", "name", "price", "description", "image_url AS imageUrl")
+        .where("name", "like", `%${name}%`);
 
       res.status(200).send(result);
     } else {
-      const result = await db("products");
+      const result = await db("products").select(
+        "id",
+        "name",
+        "price",
+        "description",
+        "image_url AS imageUrl"
+      );
 
       res.status(200).send(result);
     }
