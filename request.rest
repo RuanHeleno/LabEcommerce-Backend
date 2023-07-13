@@ -115,7 +115,7 @@ Content-Type: application/json
 }
 
 ###Delete Purchase by ID
-DELETE http://localhost:3003/purchase/pur001
+DELETE http://localhost:3003/purchases/pur002
 
 
 
