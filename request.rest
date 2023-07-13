@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###Get User by ID
-GET http://localhost:3003/users/u002
+GET http://localhost:3003/users/u001
 
 ###Get User Purchases By ID
 GET http://localhost:3003/users/u001/purchases
@@ -115,7 +115,7 @@ Content-Type: application/json
 }
 
 ###Delete Purchase by ID
-DELETE http://localhost:3003/purchase/pur001
+DELETE http://localhost:3003/purchases/pur002
 
 
 

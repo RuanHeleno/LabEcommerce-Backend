@@ -11,7 +11,9 @@ export const GetProductById = async (req: Request, res: Response) => {
     if (id) {
       if (id.length !== 7) throw new Error("ID deve possuir 7 caracteres");
 
-      const result = await db("products").where({ id: id });
+      const result = await db("products")
+        .select("id", "name", "price", "description", "image_url AS imageUrl")
+        .where({ id: id });
 
       res.status(200).send(result);
     }

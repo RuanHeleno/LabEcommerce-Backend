@@ -1,4 +1,4 @@
-# Pokedex
+# API LabEcommerce Backend
 
 ## Table of contents
 
