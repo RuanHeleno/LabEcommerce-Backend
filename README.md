@@ -30,6 +30,10 @@
 
 A API to my portfolio made based on a Ecommerce backend. See more below :)
 
+### Demo
+
+[Click here to see more](https://documenter.getpostman.com/view/17432210/2s946eADNj)
+
 ## :computer: Features
 
 - Users CRUD
@@ -442,10 +446,6 @@ A API to my portfolio made based on a Ecommerce backend. See more below :)
     message: "Pedido cancelado com sucesso!"
 }
 ```
-
-### Demo
-
-[Click here to see more](https://documenter.getpostman.com/view/17432210/2s946eADNj)
 
 ## :newspaper: Process
 
