@@ -22,6 +22,7 @@
   - [Get all Purchases](#get-all-purchases)
   - [Edit Purchase By ID](#edit-purchase-by-id)
   - [Delete Purchase By ID](#delete-purchase-by-id)
+  - [Get all Purchases Products](#get-all-purchases-products)
 - [Process](#process)
   - [Built with](#built-with)
 - [Author](#author)
@@ -445,6 +446,40 @@ A API to my portfolio made based on a Ecommerce backend. See more below :)
 {
     message: "Pedido cancelado com sucesso!"
 }
+```
+
+---
+
+### Get all Purchases Products
+
+```
+// Request
+// GET /purchasesProducts
+
+// Response
+// status 200 OK
+[
+    {
+        "purchase_id": "pur001",
+        "product_id": "prod001",
+        "quantity": 4
+    },
+    {
+        "purchase_id": "pur001",
+        "product_id": "prod002",
+        "quantity": 2
+    },
+    {
+        "purchase_id": "pur002",
+        "product_id": "prod001",
+        "quantity": 3
+    },
+    {
+        "purchase_id": "pur002",
+        "product_id": "prod002",
+        "quantity": 3
+    }
+]
 ```
 
 ## :newspaper: Process
